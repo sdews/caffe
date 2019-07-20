@@ -5,7 +5,7 @@
 //
 // where ROOTFOLDER is the root folder that holds all the images, and LISTFILE
 // should be a list of files as well as their labels, in the format as
-//   subfolder1/file1.JPEG 7
+//   subfolder1/file1.JPEG 7 8 1
 //   ....
 
 #include <algorithm>
@@ -72,14 +72,17 @@ int main(int argc, char** argv) {
   const string encode_type = FLAGS_encode_type;
 
   std::ifstream infile(argv[2]);
-  std::vector<std::pair<std::string, int> > lines;
-  std::string line;
-  size_t pos;
+  std::vector<std::pair<std::string, vector<int> > > lines;
+  std::string line, filename;
   int label;
   while (std::getline(infile, line)) {
-    pos = line.find_last_of(' ');
-    label = atoi(line.substr(pos + 1).c_str());
-    lines.push_back(std::make_pair(line.substr(0, pos), label));
+    std::istringstream iss(line);
+    iss >> filename;
+    std::vector<int> labels;
+    while(iss >> line){
+      labels.push_back(label);
+    }
+    lines.push_back(std::make_pair(filename, labels));
   }
   if (FLAGS_shuffle) {
     // randomly shuffle data
